@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API\V1;
 
-use App\Http\Requests\LoginRequest;
-use App\Http\Requests\ProfileRequest;
-use App\Http\Requests\RegisterRequest;
+
+use App\Http\Requests\API\V1\Auth\LoginRequest;
+use App\Http\Requests\API\V1\Auth\ProfileRequest;
+use App\Http\Requests\API\V1\Auth\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Hash;

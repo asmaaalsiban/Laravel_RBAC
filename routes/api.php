@@ -1,44 +1,51 @@
 <?php
 
-use App\Http\Controllers\AuthController;
-use App\Http\Controllers\PermissionController;
-use App\Http\Controllers\RoleController;
-use App\Http\Controllers\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\V1\AuthController;
+use App\Http\Controllers\API\V1\UserController;
+use App\Http\Controllers\API\V1\RoleController;
+use App\Http\Controllers\API\V1\PermissionController;
 
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::controller(AuthController::class)->group(function () {
+    Route::post('/register', 'register');
+    Route::post('/login', 'login');
+});
+
 Route::middleware("auth:sanctum")->group(function () {
-    //auth routes
+
     Route::get('/profile', [AuthController::class, 'profile']);
     Route::post('/logout', [AuthController::class, 'logout']);
-    //User management routes
-    Route::controller(UserController::class)->group(function () {
-        Route::post('/users', 'store');
-        Route::get('/users', 'index');
-        Route::get('/users/{id}', 'show');
-        Route::put('/users/{id}', 'update');
-        Route::delete('/users/{id}', 'destroy');
-        //Assign /remove roles to user
-        Route::post("/user/{id}/role", "AssignRoleToUser");
-        Route::delete("/user/{id}/role", "RemoveRoleFromUser");
-        // //Assign /remove permission to user
-        // Route::post('/users/{id}/permissions', 'AssignPermissionToUser');
-        // Route::delete("/users/{id}/permissions", "RemovePermissionFromUser");
+
+
+    Route::controller(UserController::class)->prefix('users')->group(function () {
+        Route::get('/', 'index');              // api/v1/users (جلب الجميع)
+        Route::post('/', 'store');             // api/v1/users (إنشاء مستخدم)
+        Route::get('/{id}', 'show');           // api/v1/users/{id} (عرض مستخدم)
+        Route::put('/{id}', 'update');
+        Route::delete('/{id}', 'destroy');
+
+        // إدارة أدوار المستخدم
+        Route::post('/{id}/role', 'AssignRoleToUser');     // api/v1/users/{id}/role
+        Route::delete('/{id}/role', 'RemoveRoleFromUser'); // api/v1/users/{id}/role
     });
-    //Role management routes
-    Route::controller(RoleController::class)->group(function () {
-        Route::post('/roles', 'store');
-        Route::get('/roles', 'index');
-        Route::get('/roles/{id}', 'show');
-        Route::put('/roles/{id}', 'update');
-        Route::delete('/roles/{id}', 'destroy');
-        //assign/remove permission to Role
-        Route::post('/roles/{id}/permissions', 'assignPermissions');
-        Route::delete('/roles/{id}/permissions', 'removePermissions');
+
+    // مجموعة إدارة الأدوار (Role Management)
+    Route::controller(RoleController::class)->prefix('roles')->group(function () {
+        Route::get('/', 'index');              // api/v1/roles
+        Route::post('/', 'store');             // api/v1/roles
+        Route::get('/{id}', 'show');           // api/v1/roles/{id}
+        Route::put('/{id}', 'update');         // api/v1/roles/{id}
+        Route::delete('/{id}', 'destroy');     // api/v1/roles/{id}
+
+        // إدارة صلاحيات الدور
+        Route::post('/{id}/permissions', 'assignPermissions');     // api/v1/roles/{id}/permissions
+        Route::delete('/{id}/permissions', 'removePermissions');   // api/v1/roles/{id}/permissions
     });
-    //permission management routes
-    Route::get("/permissions", [PermissionController::class, "index"]);
+
+
+    Route::controller(PermissionController::class)->prefix('permissions')->group(function () {
+        Route::get('/', 'index');
+    });
+
 });

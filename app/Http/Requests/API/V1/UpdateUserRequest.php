@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests;
+namespace App\Http\Requests\API\V1;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateRoleRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,7 +23,9 @@ class UpdateRoleRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name" => "sometimes|string|unique:roles,name," . $this->route('id'),
+            "name" => "sometimes|required|string",
+            "email" => "sometimes|required|email|unique:users,email," . $this->id,
+            "password" => "sometimes|required|string|between:6,8",
         ];
     }
 }

@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\API\V1;
 
-use App\Http\Requests\AssingPermissionsRequest;
-use App\Http\Requests\StoreRoleRequest;
-use App\Http\Requests\UpdateRoleRequest;
+
+use App\Http\Requests\API\V1\AssingPermissionsRequest;
+use App\Http\Requests\API\V1\StoreRoleRequest;
+use App\Http\Requests\API\V1\UpdateRoleRequest;
 use App\Http\Resources\RoleResource;
 use App\Models\Role;
 use Illuminate\Http\Request;
