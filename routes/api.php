@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\PermissionsEnum;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\V1\AuthController;
 use App\Http\Controllers\API\V1\UserController;
@@ -19,33 +20,33 @@ Route::middleware("auth:sanctum")->group(function () {
 
 
     Route::controller(UserController::class)->prefix('users')->group(function () {
-        Route::get('/', 'index');              // api/v1/users (جلب الجميع)
-        Route::post('/', 'store');             // api/v1/users (إنشاء مستخدم)
-        Route::get('/{id}', 'show');           // api/v1/users/{id} (عرض مستخدم)
-        Route::put('/{id}', 'update');
-        Route::delete('/{id}', 'destroy');
+        Route::get('/', 'index')->middleware('hasPermissions:' . PermissionsEnum::VIEW_USERS->value);
+        Route::post('/', 'store')->middleware('hasPermissions:' . PermissionsEnum::CREATE_USER->value);
+        Route::get('/{id}', 'show')->middleware('hasPermissions:' . PermissionsEnum::VIEW_USER->value);
+        Route::put('/{id}', 'update')->middleware('hasPermissions:' . PermissionsEnum::UPDATE_USER->value);
+        Route::delete('/{id}', 'destroy')->middleware('hasPermissions:' . PermissionsEnum::DELETE_USER->value);
 
         // إدارة أدوار المستخدم
-        Route::post('/{id}/role', 'AssignRoleToUser');     // api/v1/users/{id}/role
-        Route::delete('/{id}/role', 'RemoveRoleFromUser'); // api/v1/users/{id}/role
+        Route::post('/{id}/role', 'AssignRoleToUser');
+        Route::delete('/{id}/role', 'RemoveRoleFromUser');
     });
 
     // مجموعة إدارة الأدوار (Role Management)
     Route::controller(RoleController::class)->prefix('roles')->group(function () {
-        Route::get('/', 'index');              // api/v1/roles
-        Route::post('/', 'store');             // api/v1/roles
-        Route::get('/{id}', 'show');           // api/v1/roles/{id}
-        Route::put('/{id}', 'update');         // api/v1/roles/{id}
-        Route::delete('/{id}', 'destroy');     // api/v1/roles/{id}
+        Route::get('/', 'index')->middleware('hasPermissions:' . PermissionsEnum::VIEW_ROLES->value);
+        Route::post('/', 'store')->middleware('hasPermissions:' . PermissionsEnum::CREATE_ROLE->value);
+        Route::put('/{id}', 'update')->middleware('hasPermissions:' . PermissionsEnum::UPDATE_ROLE->value);
+        Route::delete('/{id}', 'destroy')->middleware('hasPermissions:' . PermissionsEnum::DELETE_ROLE->value);
+        Route::get('/{id}', 'show')->middleware('hasPermissions:' . PermissionsEnum::VIEW_ROLE->value);
 
         // إدارة صلاحيات الدور
-        Route::post('/{id}/permissions', 'assignPermissions');     // api/v1/roles/{id}/permissions
-        Route::delete('/{id}/permissions', 'removePermissions');   // api/v1/roles/{id}/permissions
+        Route::post('/{id}/permissions', 'assignPermissions');
+        Route::delete('/{id}/permissions', 'removePermissions');
     });
 
 
     Route::controller(PermissionController::class)->prefix('permissions')->group(function () {
-        Route::get('/', 'index');
+        Route::get('/', 'index')->middleware('hasPermissions:' . PermissionsEnum::VIEW_PERMISSIONS->value);
     });
 
 });
